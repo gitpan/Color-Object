@@ -3,7 +3,7 @@
 
 package Color::Object;
 
-$VERSION='0.1_01';
+$VERSION='0.1_02';
 
 use POSIX;
 
@@ -11,7 +11,7 @@ use POSIX;
 
 =head1 NAME
 
-Color::Object 
+Color::Object - A OO-Color Module 
 
 =head1 DESCRIPTION
 
@@ -266,7 +266,9 @@ sub asHSL {
 
 =item $grey = $cl->asGrey 
 
-Returns $cl's grey value. Range [0 .. 1].
+=item $grey = $cl->asGrey2
+
+Returns $cl's grey value. Range [0 .. 1]. Functions 2 returns the geometric mean of the corresponding RGB values.
 
 =cut 
 
@@ -283,7 +285,7 @@ sub asGrey2 {
 
 =item ( $c, $m, $y )= $cl->asCMY 
 
-Returns $cl's cmy values. Range [0 .. 1].
+Returns $cl's cmy values. Range [0 .. 1]. 
 
 =cut 
 
@@ -294,7 +296,13 @@ sub asCMY {
 
 =item ( $c, $m, $y, $k )= $cl->asCMYK 
 
-Returns $cl's cmyk values. Range [0 .. 1].
+=item ( $c, $m, $y, $k )= $cl->asCMYK2
+
+=item ( $c, $m, $y, $k )= $cl->asCMYK3
+
+Returns $cl's cmyk values. Range [0 .. 1]. 
+Function 2 returns a 25% lighter color-equivalent.
+Function 3 returns a 25% lighter color-equivalent.
 
 =cut 
 
@@ -303,6 +311,21 @@ sub asCMYK {
 	my @cmy=(map { 1-$_ } $self->asRGB);
 	my $k=mMin(@cmy);
 	return((map { $_-$k } @cmy),$k);
+}
+
+sub asCMYK2 {
+	my $self=shift @_;
+	my @cmyk=$self->asCMYK;
+	$cmyk[3]*=0.75;
+	return(@cmyk);
+}
+
+sub asCMYK3 {
+	my $self=shift @_;
+	my @cmyk=$self->asCMY;
+	$cmyk[3]=0;
+	return(map { $_*0.75 } @cmyk);
+	return(@cmyk);
 }
 
 =item $hex = $cl->asHex 
